@@ -1,0 +1,111 @@
+# Negative Sentiment Keywords for Slunkobot
+# 
+# This file contains word stems used to filter negative content
+# from the positive bot (@slunkobot). Uses Czech and Slovak word stems
+# to catch all inflected forms automatically.
+#
+# IMPORTANT: Includes variants with diacritics for Slovak texts
+# (kriz + kríz, because Ruby .include() is diacritic-sensitive)
+#
+# Format: One word stem per line
+# Comments: Lines starting with # are ignored
+# Empty lines: Ignored
+#
+# Last updated: 2026-01-09
+# Version: 2.19.0
+
+# Economic crisis
+kriz
+kríz
+krach
+zdraž
+zdražuj
+drah
+drahš
+
+# Layoffs & unemployment
+pouš
+pušt
+pust
+prepust
+nezaměst
+nezamest
+
+# Economic decline
+# pokles
+# kles
+propad
+kolaps
+bankrot
+úpad
+obchádz
+obcház
+vyhýb
+vyhn
+
+# War & conflict
+válk
+valk
+vojn
+vojen
+war
+konflikt
+
+# Death & tragedy
+mrt
+smrt
+mrel
+úmrtí
+úmrt
+died
+death
+
+# Accidents & disasters
+nehod
+katastro
+katastrof
+
+# Violence & crime
+obet
+obět
+victim
+útok
+utok
+attack
+teror
+teroriz
+exploz
+výbuch
+vybuch
+bomb
+požár
+pozar
+fire
+oheň
+vrazd
+vraž
+murder
+zabít
+
+# Arrests & imprisonment
+zatč
+zatkn
+arrest
+prison
+vězen
+vazen
+väzen
+
+# Corruption & scandal
+korup
+korupč
+skandál
+skandal
+škandál
+
+# Theft
+krad
+krádež
+theft
+loup
+loupež

@@ -1,0 +1,30 @@
+# Private documentation (contains real IPs, tokens, credentials)
+docs/*.private.md
+
+# Secrets and credentials
+env.sh
+
+# Logs
+*.log
+log/
+logs/
+
+# Temp
+tmp/
+
+# Runtime data
+data/
+cache/
+output/
+*.lock
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+
+# macOS
+.DS_Store
+
+# Nova IDE
+.nova/

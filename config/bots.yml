@@ -1,0 +1,164 @@
+# ==========================================
+# ZPRÁVOBOT AI DIGEST - BOT CONFIGURATION
+# ==========================================
+# Version: 3.0.0
+# Format: YAML
+#
+# Globální defaults (mastodon, claude, jazyk, URL) jsou v config/global.yml.
+# Tento soubor obsahuje pouze bot-specifické přepsání těchto defaults.
+#
+# Boty:
+#   @zpravobot  - Neutrální ranní přehled  (7:30)
+#   @slunkobot  - Pozitivní polední přehled (12:00)
+#   @hrubot     - Sarkastický večerní přehled (19:00)
+
+# ==========================================
+# BOT: NEUTRAL (@zpravobot)
+# ==========================================
+# Ranní přehled - komplexní pokrytí všech témat
+
+zpravobot:
+  handle: '@zpravobot@zpravobot.news'
+  style: neutral
+  time_slot: morning
+
+  # Témata - zobrazit všechna s dostatečným počtem postů
+  topics:
+    min_posts: 8              # Téma musí mít alespoň 8 postů
+    excluded: []              # Žádná vyloučená témata
+
+  # Thread
+  threads:
+    extension_toots: 3        # 1 summary + 3 extension = 4 tooty celkem
+    articles_per_toot: 5      # 5 článků na extension toot (2500 znaků to unese)
+    total_articles: 15        # 15 článků celkem
+
+  # Článek
+  articles:
+    max_per_source: 2         # Max 2 články ze stejného zdroje
+    include_excerpt: true     # Přidat 1-2 věty z textu postu
+
+  # Formátování
+  hashtags: '#zpravobot #trendydne'
+  footer: '#zprávy #aktualně'
+
+# ==========================================
+# BOT: POSITIVE (@slunkobot)
+# ==========================================
+# Polední přehled - filtrovaně pozitivní obsah
+
+slunkobot:
+  handle: '@slunkobot@zpravobot.news'
+  style: positive
+  time_slot: noon
+
+  # Témata - jen pozitivní, min. počet snížen (méně pozitivního obsahu)
+  topics:
+    min_posts: 4
+    excluded:
+      - Konflikty
+      - Politika
+      - Investigativa
+
+  # Thread
+  threads:
+    extension_toots: 2        # 1 summary + 2 extension = 3 tooty
+    articles_per_toot: 5
+    total_articles: 10
+
+  # Článek
+  articles:
+    max_per_source: 2
+    include_excerpt: true
+
+  # Filtrování sentimentu (klíčová slova v textu postu)
+  selection:
+    positive_keywords:
+      - úspěch
+      - vítězství
+      - vítěz
+      - rekord
+      - festival
+      - koncert
+      - ocenění
+      - talent
+      - cena
+      - nominace
+      - skvělý
+      - výborný
+      - radost
+      - oslava
+      - inaugurace
+      - premiéra
+      - výhra
+      - zisk
+      - rekordní
+    negative_keywords:
+      - nehoda
+      - smrt
+      - zemřel
+      - tragédie
+      - havárie
+      - konflikt
+      - válka
+      - krize
+      - problém
+      - kritika
+      - skandál
+      - obžaloba
+      - trest
+      - soud
+
+  # Formátování
+  hashtags: '#dobréZprávy #zpravobot'
+
+# ==========================================
+# BOT: SARCASTIC (@hrubot)
+# ==========================================
+# Večerní komentář - zaměřený na kontroverze a absurdity
+
+hrubot:
+  handle: '@hrubot@zpravobot.news'
+  style: sarcastic
+  time_slot: evening
+
+  # Témata - kontroverzní, min. počet nízký
+  topics:
+    min_posts: 5
+    preferred:
+      - Politika
+      - Konflikty
+      - Komentáře
+      - Investigativa
+
+  # Thread - více tootů, protože komentáře potřebují místo
+  threads:
+    extension_toots: 3        # 1 summary + 3 extension = 4 tooty
+    articles_per_toot: 5      # 5 článků na toot (2500 znaků to unese i s komentáři)
+    total_articles: 15
+
+  # Článek
+  articles:
+    max_per_source: 2
+    include_excerpt: true
+    add_commentary: true      # Přidat sarkastický komentář ke každému článku
+
+  # Výběrová strategie - kontroverzní obsah
+  selection:
+    controversial_keywords:
+      - trump
+      - skandál
+      - drama
+      - kritika
+      - kontroverzní
+      - sporný
+      - debata
+      - konflikt
+      - korupce
+      - kauza
+      - obvinění
+      - trest
+      - soud
+
+  # Formátování
+  hashtags: '#realita #zpravobot'

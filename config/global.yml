@@ -1,0 +1,197 @@
+# ============================================================
+# Zprávobot Digest - Globální konfigurace
+# ============================================================
+# Defaults platné pro všechny boty.
+# Bot-specifická konfigurace je v bots.yml.
+# ============================================================
+
+# Mastodon instance
+mastodon:
+  instance: https://zpravobot.news
+  max_toot_length: 2500         # zpravobot.news podporuje až 2500 znaků
+  url_counted_length: 23        # Mastodon vždy počítá URL jako 23 znaků
+
+# Claude API
+claude:
+  model: claude-sonnet-4-20250514
+  max_tokens: 2000
+  temperature: 0.7
+  commentary_max_tokens: 800
+  commentary_temperature: 0.9
+
+# HTTP timeouts (sekundy)
+http:
+  open_timeout: 5
+  read_timeout: 20
+  write_timeout: 10
+  retry_max: 3
+
+# Cesta k mastodon_accounts.yml v zbnw-ng projektu
+# (pro bin/sync_accounts.rb)
+accounts_source:
+  path: ~/zbnw-ng/config/mastodon_accounts.yml
+
+# Cache pro kategorie účtů (generováno sync_accounts.rb)
+accounts_cache:
+  path: cache/accounts_categories.yml
+
+# Mapování mastodon_accounts.yml kategorií na digest témata
+# (kategorie z účtů → česky pojmenovaná témata v digestu)
+category_map:
+  # Zprávy a žurnalistika
+  news: Zprávy
+  journalism: Zprávy
+  commentary: Komentáře
+  watchdog: Investigativa
+
+  # Politika
+  politics: Politika
+
+  # Konflikty a mezinárodní
+  war: Konflikty
+  ukraine: Konflikty
+  conflict: Konflikty
+
+  # Sport
+  sport: Sport
+  'ice hockey': Sport
+  hockey: Sport
+  f1: Sport
+  formula: Sport
+  cycling: Sport
+  speedway: Sport
+  moto: Sport
+  football: Sport
+
+  # Automobily
+  auto: Automobily
+
+  # Věda a příroda
+  science: Věda & Příroda
+  nature: Věda & Příroda
+  weather: Počasí
+
+  # Technologie
+  technology: Technologie
+  tech: Technologie
+
+  # Zábava
+  fun: Zábava
+  irony: Zábava
+  parody: Zábava
+  humor: Zábava
+
+  # Kultura
+  culture: Kultura
+  music: Kultura
+  film: Kultura
+  art: Kultura
+
+  # Životní styl
+  beer: Životní styl
+  food: Životní styl
+  travel: Životní styl
+  lifestyle: Životní styl
+
+  # Foto/video
+  photography: Foto & Video
+  video: Foto & Video
+
+  # Ostatní
+  test: Test
+
+# Priority témat (vyšší = důležitější)
+topic_priority:
+  Konflikty: 110
+  Zahraniční politika: 100
+  Politika: 90
+  Zprávy: 85
+  Ekonomika: 80
+  Investigativa: 75
+  Komentáře: 70
+  Kultura: 65
+  Věda & Příroda: 60
+  Technologie: 55
+  Společnost: 50
+  Počasí: 45
+  Sport: 40
+  Automobily: 35
+  Zábava: 30
+  Foto & Video: 25
+  Životní styl: 20
+
+# Detekce jazyka
+language:
+  enabled: [cs, sk]
+  blocked: [en]
+  preferred_ratio:
+    cs: 3
+    sk: 1
+  fallback: cs
+  czech_words: [že, být, který, jeho, také, své, nebo, už, když, bez, jsou, není, bylo, více, jak, pro, ale, než, tak, při, jako, zde, toto, tohoto, těchto, mezi, přes, podle, pouze, další, jiné, celé, velmi, ještě, pak, tedy, každý, celý, tento, která, které]
+  slovak_words: [že, ktorý, jeho, alebo, už, keď, bez, sa, nie, ako, pre, ale, tak, pri, toto, tohto, týchto, medzi, cez, podľa, len, ďalší, iné, celé, veľmi, ešte, potom, teda, každý, celý, tento, ktorá, ktoré, sú]
+  english_words: [the, and, that, have, with, this, from, they, will, been, were, their, there, which, about, would, could, should, these, those, when, what, where, into, through, between, after, before]
+
+# Topic-specific language rules
+topic_language_rules:
+  Počasí:
+    languages: [cs]
+  Sport:
+    languages: [cs, sk]
+  Politika:
+    languages: [cs, sk]
+
+# URL whitelist
+url:
+  allowed_schemes: [https, http]
+  allowed_tlds: [cz, sk, eu, app]
+  twitter_domains: [x.com, twitter.com, xcancel.com, nitter.net]
+  social_domains:
+    - instagram.com
+    - facebook.com
+    - youtube.com
+    - youtu.be
+    - bsky.app
+    - open.spotify.com
+    - patreon.com
+    - soundcloud.com
+  special_domains:
+    - ta3.com
+    - flashsco.re
+    - cynickaobluda.com
+    - onlajny.com
+    - petice.com
+    - substack.com
+    - medium.com
+    - herohero.co
+    - forendors.cz
+  url_shorteners:
+    - brnw.ch
+    - bit.ly
+    - buff.ly
+    - t.co
+    - tinyurl.com
+    - goo.gl
+    - ift.tt
+    - ow.ly
+    - cutt.ly
+    - rb.gy
+    - is.gd
+    - j.mp
+    - t.ly
+    - aktln.cz
+    - 1url.cz
+    - h7.cl
+    - rdy.cz
+    - sqzr.cz
+    - jdem.cz
+
+# Formatting
+formatting:
+  excerpt_sentences: 3          # Kolik vět z textu postu použít jako excerpt
+  excerpt_max_chars: 400        # Max délka excerptua
+  title_min_length: 30          # Min délka titulku (nížekrátit nelze)
+  title_max_length: 120         # Max délka titulku před zkrácením
+  title_safety_buffer: 30       # Safety buffer při výpočtu délky
+  article_separator: "\n"       # Oddělovač mezi články
+  sleep_between_toots: 1        # Sekund čekání mezi tootem a reply
