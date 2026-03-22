@@ -1,0 +1,69 @@
+# Domain Whitelist Configuration for Zprávobot
+#
+# This file defines which domains are allowed through URL filtering.
+# Used by all three bots (zpravobot, slunkobot, hrubot).
+#
+# Format: YAML
+# Last updated: 2026-01-09
+# Version: 2.20.0
+
+# URL schemes allowed
+schemes:
+  - https
+  - http  # Allowed for .cz/.sk domains and shorteners only
+
+# Top-level domains allowed by default
+# Any URL with these TLDs passes automatically
+tlds:
+  - cz
+  - sk
+  - eu
+  - app
+
+# Twitter/X domains - Czech/Slovak content on these platforms
+twitter:
+  - x.com
+  - twitter.com
+  - xcancel.com
+  - nitter.net
+
+# Social media platforms - Czech/Slovak content
+social:
+  - instagram.com
+  - facebook.com
+  - youtube.com
+  - bsky.app
+  - open.spotify.com
+  - patreon.com
+
+# Special Czech/Slovak domains
+# These don't have .cz/.sk TLD but contain relevant news
+special:
+  - ta3.com           # Slovak TV (230× in 5 days)
+  - flashsco.re       # Czech sports scores
+  - cynickaobluda.com # Czech satire/commentary
+  - onlajny.com       # Czech news aggregator
+  - petice.com        # Czech petitions platform
+  - substack.com      # Newsletter platform (Czech/Slovak writers)
+
+# URL shorteners - preserve shortened links
+# CRITICAL: brnw.ch used 611× in 5 days for Slovak news!
+shorteners:
+  - brnw.ch    # Slovak news shortener (CRITICAL - 611× usage!)
+  - bit.ly     # Global shortener
+  - buff.ly    # Buffer shortener
+  - t.co       # Twitter shortener
+  - tinyurl.com
+  - goo.gl     # Google shortener (legacy)
+  - ift.tt     # IFTTT shortener
+  - ow.ly      # Hootsuite shortener
+  - aktln.cz   # Aktuálně.cz shortener
+  - 1url.cz    # Czech shortener
+  - h7.cl      # Czech shortener
+  - rdy.cz     # Czech shortener
+
+# Notes:
+# - Add new domains as needed
+# - Test with --dry-run before production
+# - Remove rarely-used domains to keep list clean
+# - Document usage frequency if known
