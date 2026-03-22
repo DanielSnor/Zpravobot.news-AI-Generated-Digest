@@ -1,4 +1,4 @@
-# 🤖 Zprávobot.news - AI Daily Digest
+# 🤖 Zprávobot.news - AI Daily Digest (ZBNW-AI-DIGEST)
 
 Automatizovaný systém denního digestu pro Mastodon boty zpravobot.news — využívá Claude AI pro analýzu a generování obsahu.
 
