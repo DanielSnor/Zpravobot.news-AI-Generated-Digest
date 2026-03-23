@@ -16,10 +16,11 @@ class PostReader
   MIN_TEXT_LENGTH = 20
 
   def initialize(config_loader)
-    @lang_config  = config_loader.language_config
-    @url_config   = config_loader.url_config
-    @formatting   = config_loader.formatting
-    @csv_path     = resolve_csv_path(config_loader)
+    @lang_config        = config_loader.language_config
+    @url_config         = config_loader.url_config
+    @formatting         = config_loader.formatting
+    @csv_path           = resolve_csv_path(config_loader)
+    @excluded_accounts  = config_loader.global.fetch('excluded_accounts', [])
   end
 
   # Načte posty z CSV pro daný den (nebo pro dnešek pokud date=nil)
@@ -85,6 +86,7 @@ class PostReader
 
     return nil if text.length < MIN_TEXT_LENGTH
     return nil if account_id.empty?
+    return nil if @excluded_accounts.include?(username.empty? ? account_id : username)
 
     {
       id:         row['id'].to_s.strip,
