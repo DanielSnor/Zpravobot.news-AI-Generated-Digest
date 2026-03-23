@@ -186,6 +186,9 @@ url:
     - sqzr.cz
     - jdem.cz
 
+# Účty vlastních botů – jejich posty se nezahrnují do výběru
+excluded_accounts: [zpravobot, slunkobot, hrubot]
+
 # Formatting
 formatting:
   excerpt_sentences: 3          # Kolik vět z textu postu použít jako excerpt
