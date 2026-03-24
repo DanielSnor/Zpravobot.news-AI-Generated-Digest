@@ -1,5 +1,11 @@
 # 🤖 Zprávobot.news - AI Daily Digest (ZBNW-AI-DIGEST)
 
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](https://unlicense.org)
+[![Mastodon](https://img.shields.io/badge/Mastodon-Instance-6364FF?logo=mastodon&logoColor=white)](https://zpravobot.news)
+[![Ruby](https://img.shields.io/badge/Ruby-Pure_stdlib-CC342D?logo=ruby&logoColor=white)](https://www.ruby-lang.org)
+
+![Maskot Zpravobot.news](https://zpravobot.news/system/site_uploads/files/000/000/002/@2x/49c4aa7df6b81d4a.png 'Maskot Zpravobot.news')
+
 Automatizovaný systém denního digestu pro Mastodon boty zpravobot.news — využívá Claude AI pro analýzu a generování obsahu.
 
 ## 🎯 Přehled
