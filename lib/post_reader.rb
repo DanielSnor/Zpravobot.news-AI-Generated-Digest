@@ -21,6 +21,9 @@ class PostReader
     @formatting         = config_loader.formatting
     @csv_path           = resolve_csv_path(config_loader)
     @excluded_accounts  = config_loader.global.fetch('excluded_accounts', [])
+    # Hostname vlastní instance – posty z ní jsou vždy naše boty (pojistka)
+    instance_url        = config_loader.mastodon.fetch('instance', '')
+    @own_instance_host  = URI.parse(instance_url).host.to_s.downcase rescue ''
   end
 
   # Načte posty z CSV pro daný den (nebo pro dnešek pokud date=nil)
@@ -87,6 +90,7 @@ class PostReader
     return nil if text.length < MIN_TEXT_LENGTH
     return nil if account_id.empty?
     return nil if @excluded_accounts.include?(username.empty? ? account_id : username)
+    return nil if own_instance_post?(uri)  # pojistka: vyřadit všechny posty z vlastní instance
 
     {
       id:         row['id'].to_s.strip,
@@ -113,6 +117,15 @@ class PostReader
   def extract_username(uri)
     match = uri.match(%r{/users/([^/]+)/statuses/})
     match ? match[1].downcase : ''
+  end
+
+  # Vrátí true pokud URI pochází z vlastní Mastodon instance
+  def own_instance_post?(uri)
+    return false if @own_instance_host.empty? || uri.empty?
+
+    URI.parse(uri).host.to_s.downcase == @own_instance_host
+  rescue URI::InvalidURIError
+    false
   end
 
   # Extrahuje article URL z textu postu (ne Mastodon URL)
