@@ -150,7 +150,7 @@ grep "ERROR\|❌" logs/zpravobot_$(date +%Y%m%d)*.log
 ## 🛠 Tech stack
 
 - **Ruby 2.6** (systémový Ruby Mastodonu)
-- **Claude API** (claude-sonnet-4-20250514)
+- **Claude API** (claude-sonnet-4-6)
 - **Mastodon API** (přímé HTTP, net/http)
 - **YAML** konfigurace, **CSV** vstup
 

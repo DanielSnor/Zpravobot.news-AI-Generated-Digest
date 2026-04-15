@@ -27,7 +27,7 @@ class ClaudeClient
 
   def initialize(config_loader)
     @api_key     = ENV['ANTHROPIC_API_KEY'].to_s
-    @model       = config_loader.claude['model']       || 'claude-sonnet-4-20250514'
+    @model       = config_loader.claude['model']       || 'claude-sonnet-4-6'
     @max_tokens  = config_loader.claude['max_tokens']  || 2000
     @temperature = config_loader.claude['temperature'] || 0.7
     @commentary_max_tokens  = config_loader.claude['commentary_max_tokens'] || 800
