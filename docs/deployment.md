@@ -187,7 +187,7 @@ digest:
   min_excerpt_length: 30  # min. délka excerptů (kratší = přeskočit)
 
 claude:
-  model: "claude-sonnet-4-20250514"
+  model: "claude-sonnet-4-6"
 ```
 
 ### config/bots.yml
