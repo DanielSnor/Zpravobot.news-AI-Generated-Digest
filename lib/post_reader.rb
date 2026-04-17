@@ -90,7 +90,6 @@ class PostReader
     return nil if text.length < MIN_TEXT_LENGTH
     return nil if account_id.empty?
     return nil if @excluded_accounts.include?(username.empty? ? account_id : username)
-    return nil if !@own_instance_host.empty? && uri.include?(@own_instance_host)
 
     {
       id:         row['id'].to_s.strip,
