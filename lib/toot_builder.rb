@@ -51,11 +51,13 @@ class TootBuilder
   BLUESKY_EXCERPT_MAX = 200  # max grafémů pro excerpt v BS článkovém postu
 
   def initialize(config_loader)
-    @max_length    = config_loader.mastodon['max_toot_length']    || 2500
-    @url_length    = config_loader.mastodon['url_counted_length'] || 23
-    @formatting    = config_loader.formatting
-    @safety_buffer = (@formatting['title_safety_buffer'] || 30).to_i
-    @bs_articles   = config_loader.bluesky.fetch('articles_per_thread', 9).to_i
+    @max_length     = config_loader.mastodon['max_toot_length']    || 2500
+    @url_length     = config_loader.mastodon['url_counted_length'] || 23
+    @formatting     = config_loader.formatting
+    @safety_buffer  = (@formatting['title_safety_buffer'] || 30).to_i
+    @bs_articles    = config_loader.bluesky.fetch('articles_per_thread', 9).to_i
+    instance_url    = config_loader.mastodon.fetch('instance', '')
+    @instance_host  = instance_url.sub(%r{^https?://}, '').chomp('/')
   end
 
   # Sestaví první toot (přehled témat)
@@ -365,7 +367,8 @@ class TootBuilder
       commentary_part = "💬 \"#{comment}\""
       overhead = graphemes("#{emoji} \n\n#{commentary_part}\n\n🔗 ") + url_graphemes
       title_budget = BLUESKY_CHAR_LIMIT - overhead
-      title = grapheme_truncate(extract_title(post[:text], 200), title_budget)
+      raw_title = extract_title(post[:text], 200)
+      title = grapheme_truncate(transform_handles(raw_title), title_budget)
       "#{emoji} #{title}\n\n#{commentary_part}\n\n🔗 #{url}"
     else
       # Zpravobot / Slunkobot: excerpt + URL
@@ -373,8 +376,18 @@ class TootBuilder
       excerpt_budget = BLUESKY_CHAR_LIMIT - overhead
       excerpt = post[:excerpt].to_s.strip
       excerpt = extract_title(post[:text], 200) if excerpt.empty?
-      excerpt = grapheme_truncate(excerpt, excerpt_budget)
+      excerpt = grapheme_truncate(transform_handles(excerpt), excerpt_budget)
       "#{emoji} #{excerpt}\n\n🔗 #{url}"
+    end
+  end
+
+  # Transformuje Mastodon handles na zbnw URL prefix pro Bluesky.
+  # @user@zpravobot.news → https://zpravobot.news/@user
+  def transform_handles(text)
+    return text if @instance_host.empty?
+
+    text.gsub(/@([\w][\w.-]*)@#{Regexp.escape(@instance_host)}/) do
+      "https://#{@instance_host}/@#{$1}"
     end
   end
 
