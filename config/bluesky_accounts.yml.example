@@ -1,0 +1,12 @@
+# Zprávobot Digest - Bluesky účty
+# Zkopíruj jako bluesky_accounts.yml a vyplň skutečné hodnoty
+# NIKDY nenahrávej bluesky_accounts.yml do gitu!
+#
+# identifier: handle nebo DID účtu (např. zpravobot.bsky.social)
+# app_password_env: název ENV proměnné s app password (nikoliv hlavní heslo)
+# pds_url: adresa PDS (výchozí: https://bsky.social)
+
+zpravobot:
+  identifier: zpravobot.bsky.social
+  app_password_env: ZPRAVOBOT_BLUESKY_APP_PASSWORD
+  pds_url: https://bsky.social

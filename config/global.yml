@@ -11,6 +11,15 @@ mastodon:
   max_toot_length: 2500         # zpravobot.news podporuje až 2500 znaků
   url_counted_length: 23        # Mastodon vždy počítá URL jako 23 znaků
 
+# Bluesky (AT Protocol)
+bluesky:
+  enabled: false                # Zapnout publikování na Bluesky (true/false)
+  char_limit: 300               # Max grafémů na jeden post
+  articles_per_thread: 9        # Počet článkových postů (celkem = 1 summary + N článků)
+  identifier: zpravobot.bsky.social
+  app_password_env: BLUESKY_APP_PASSWORD_ZPRAVOBOT
+  pds_url: https://bsky.social
+
 # Claude API
 claude:
   model: claude-sonnet-4-6
@@ -187,7 +196,6 @@ url:
     - jdem.cz
 
 # Účty vlastních botů – jejich posty se nezahrnují do výběru
-<<<<<<< HEAD
 excluded_accounts:
   - zpravobot                 # username (pro případ standardního URI formátu)
   - slunkobot
@@ -195,9 +203,6 @@ excluded_accounts:
   - "113069241186685231"      # zpravobot – numerické ID (formát /ap/users/ID/)
   - "115858244044192421"      # slunkobot
   - "115858324927372014"      # hrubot
-=======
-excluded_accounts: [zpravobot, slunkobot, hrubot]
->>>>>>> master
 
 # Formatting
 formatting:

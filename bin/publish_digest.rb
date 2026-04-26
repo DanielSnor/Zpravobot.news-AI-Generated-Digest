@@ -27,6 +27,7 @@ require 'article_selector'
 require 'claude_client'
 require 'toot_builder'
 require 'mastodon_publisher'
+require 'bluesky_publisher'
 
 # ===== LOCKFILE =====
 
@@ -174,18 +175,37 @@ begin
 
   Logging.info("Sestaveno: 1 summary + #{extensions.size} extension tootů")
 
-  # 11. Publikuj nebo dry-run
-  publisher = MastodonPublisher.new(config)
+  # 11. Publikuj nebo dry-run — Mastodon
+  mastodon_publisher = MastodonPublisher.new(config)
 
   if options[:dry_run]
-    publisher.dry_run(bot_name, summary, extensions)
+    mastodon_publisher.dry_run(bot_name, summary, extensions)
   else
-    success = publisher.publish_thread(
+    success = mastodon_publisher.publish_thread(
       bot_name, summary, extensions,
       visibility: options[:visibility]
     )
-    exit(success ? 0 : 1)
+    exit(1) unless success
   end
+
+  # 12. Publikuj nebo dry-run — Bluesky
+  if config.bluesky_enabled?
+    bluesky_posts = builder.bluesky_posts(
+      topics, posts.size, analysis, selected, bot_config,
+      commentaries: commentaries, date: target_date
+    )
+
+    bluesky_publisher = BlueskyPublisher.new(config)
+
+    if options[:dry_run]
+      bluesky_publisher.dry_run(bot_name, bluesky_posts)
+    else
+      bluesky_ok = bluesky_publisher.publish_thread(bot_name, bluesky_posts)
+      Logging.warn("Bluesky publikování selhalo — Mastodon byl úspěšný") unless bluesky_ok
+    end
+  end
+
+  exit 0 unless options[:dry_run]
 
 rescue Interrupt
   Logging.warn('Přerušeno uživatelem')
