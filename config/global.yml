@@ -11,6 +11,15 @@ mastodon:
   max_toot_length: 2500         # zpravobot.news podporuje až 2500 znaků
   url_counted_length: 23        # Mastodon vždy počítá URL jako 23 znaků
 
+# Bluesky (AT Protocol)
+bluesky:
+  enabled: false                # Zapnout publikování na Bluesky (true/false)
+  char_limit: 300               # Max grafémů na jeden post
+  articles_per_thread: 9        # Počet článkových postů (celkem = 1 summary + N článků)
+  identifier: zpravobot.bsky.social
+  app_password_env: BLUESKY_APP_PASSWORD_ZPRAVOBOT
+  pds_url: https://bsky.social
+
 # Claude API
 claude:
   model: claude-sonnet-4-6

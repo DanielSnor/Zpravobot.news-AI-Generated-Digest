@@ -63,6 +63,14 @@ class ConfigLoader
     @global.fetch('formatting', {})
   end
 
+  def bluesky
+    @global.fetch('bluesky', {})
+  end
+
+  def bluesky_enabled?
+    bluesky.fetch('enabled', false)
+  end
+
   def accounts_source_path
     raw = @global.dig('accounts_source', 'path') || '~/zbnw-ng/config/mastodon_accounts.yml'
     File.expand_path(raw)

@@ -99,6 +99,7 @@ class ClaudeClient
         "main_topics": ["téma1", "téma2", "téma3"],
         "sentiment": "positive|neutral|negative|mixed",
         "summary": "Jeden až dva věty shrnující dnešní dění v češtině.",
+        "bluesky_summary": "Totéž jako summary, ale maximálně 255 grafémů (počítej každý znak včetně emoji jako 1). Pokud je summary kratší než 255 grafémů, použij ji beze změny.",
         "notable_events": ["událost1", "událost2"]
       }
     PROMPT
@@ -191,10 +192,11 @@ class ClaudeClient
     data     = JSON.parse(json_str)
 
     {
-      main_topics:    Array(data['main_topics']).first(5),
-      sentiment:      data['sentiment'].to_s,
-      summary:        data['summary'].to_s,
-      notable_events: Array(data['notable_events']).first(3)
+      main_topics:      Array(data['main_topics']).first(5),
+      sentiment:        data['sentiment'].to_s,
+      summary:          data['summary'].to_s,
+      bluesky_summary:  data['bluesky_summary'].to_s,
+      notable_events:   Array(data['notable_events']).first(3)
     }
   rescue JSON::ParserError => e
     log_warn("Nelze parsovat Claude analýzu: #{e.message}")
@@ -220,10 +222,11 @@ class ClaudeClient
 
   def default_analysis(topics)
     {
-      main_topics:    topics.keys.first(3),
-      sentiment:      'neutral',
-      summary:        'Přehled dnešního dění v českých a slovenských médiích.',
-      notable_events: []
+      main_topics:     topics.keys.first(3),
+      sentiment:       'neutral',
+      summary:         'Přehled dnešního dění v českých a slovenských médiích.',
+      bluesky_summary: 'Přehled dnešního dění v českých a slovenských médiích.',
+      notable_events:  []
     }
   end
 

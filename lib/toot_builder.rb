@@ -47,25 +47,48 @@ class TootBuilder
     ]
   }.freeze
 
+  BLUESKY_CHAR_LIMIT  = 300
+  BLUESKY_EXCERPT_MAX = 200  # max grafémů pro excerpt v BS článkovém postu
+
   def initialize(config_loader)
     @max_length    = config_loader.mastodon['max_toot_length']    || 2500
     @url_length    = config_loader.mastodon['url_counted_length'] || 23
     @formatting    = config_loader.formatting
     @safety_buffer = (@formatting['title_safety_buffer'] || 30).to_i
+    @bs_articles   = config_loader.bluesky.fetch('articles_per_thread', 9).to_i
   end
 
   # Sestaví první toot (přehled témat)
   def summary_toot(topics, posts_count, analysis, bot_config, date: nil)
     style    = bot_config['style']
     hashtags = bot_config['hashtags'].to_s
-    date_str = (date || Date.today).strftime('%d.%m.%Y')
+    target   = date || Date.today - 1
+    date_str = target.strftime('%d.%m.%Y')
 
-    header = summary_header(style, date_str, posts_count)
+    header = summary_header(style, date_str, posts_count, target)
     ai_summary = format_ai_summary(analysis[:summary], style)
     topics_list = format_topics_list(topics, style)
     footer = "\n\n#{hashtags}\n\n👇 Vybrané články v threadu"
 
     assemble(header, ai_summary, topics_list, footer)
+  end
+
+  # Sestaví pole Bluesky postů (nativní formát, ≤ 300 grafémů každý)
+  # Post 1: summary, posty 2–N: jeden článek každý
+  # selected: pole { topic:, post: } hashů (použije se prvních @bs_articles)
+  def bluesky_posts(topics, posts_count, analysis, selected, bot_config, commentaries: [], date: nil)
+    style    = bot_config['style']
+    target   = date || Date.today - 1
+    date_str = target.strftime('%d.%m.%Y')
+    add_commentary = bot_config.dig('articles', 'add_commentary') == true
+
+    summary_post = build_bluesky_summary(style, date_str, analysis, target)
+    article_posts = build_bluesky_article_posts(
+      selected, bot_config, commentaries, add_commentary
+    )
+
+    log_info("Bluesky: 1 summary + #{article_posts.size} článků = #{1 + article_posts.size} postů")
+    [summary_post, *article_posts]
   end
 
   # Sestaví pole extension tootů z vybraných článků
@@ -93,14 +116,21 @@ class TootBuilder
 
   # ===== SUMMARY TOOT =====
 
-  def summary_header(style, date_str, posts_count)
+  DAY_ADJECTIVES = %w[nedělní pondělní úterní středeční čtvrteční páteční sobotní].freeze
+
+  def day_adjective(date)
+    DAY_ADJECTIVES[date.wday].upcase
+  end
+
+  def summary_header(style, date_str, posts_count, date)
+    day = day_adjective(date)
     case style
     when 'positive'
-      "☀️ DOBRÉ ZPRÁVY DNE (#{date_str})\n\nZ #{posts_count} zpráv to pozitivní:"
+      "☀️ #{day} DOBRÉ ZPRÁVY (#{date_str})\n\nZ #{posts_count} zpráv to pozitivní:"
     when 'sarcastic'
-      "😏 DNEŠNÍ REALITA (#{date_str})\n\n#{posts_count} postů = co se vlastně stalo?"
+      "😏 #{day} REALITA (#{date_str})\n\n#{posts_count} postů = co se vlastně stalo?"
     else
-      "📊 TRENDY DNE (#{date_str})\n\nZpracováno #{posts_count} postů:"
+      "📊 #{day} TRENDY (#{date_str})\n\nZpracováno #{posts_count} postů:"
     end
   end
 
@@ -275,6 +305,89 @@ class TootBuilder
 
   def assemble(*parts)
     parts.reject { |p| p.to_s.strip.empty? }.join
+  end
+
+  # ===== BLUESKY =====
+
+  def build_bluesky_summary(style, date_str, analysis, date)
+    header  = bluesky_summary_header(style, date_str, date)
+    bs_text = analysis[:bluesky_summary].to_s.strip
+    bs_text = analysis[:summary].to_s.strip if bs_text.empty?
+
+    post = "#{header}\n\n#{bs_text}"
+
+    # Pojistka: pokud Claude nedodržel limit, ořež na 300 grafémů
+    if graphemes(post) > BLUESKY_CHAR_LIMIT
+      allowed = BLUESKY_CHAR_LIMIT - graphemes(header) - 2  # -2 za \n\n
+      bs_text = grapheme_truncate(bs_text, allowed)
+      post = "#{header}\n\n#{bs_text}"
+    end
+
+    post
+  end
+
+  def bluesky_summary_header(style, date_str, date)
+    day = day_adjective(date)
+    case style
+    when 'positive' then "☀️ #{day} DOBRÉ ZPRÁVY (#{date_str})"
+    when 'sarcastic' then "😏 #{day} REALITA (#{date_str})"
+    else "📊 #{day} TRENDY (#{date_str})"
+    end
+  end
+
+  def build_bluesky_article_posts(articles, bot_config, commentaries, add_commentary)
+    result = []
+    comment_idx = 0
+
+    articles.each do |item|
+      break if result.size >= @bs_articles
+
+      post    = item[:post]
+      topic   = item[:topic]
+      emoji   = TOPIC_EMOJI[topic] || '📌'
+      url     = post[:url].to_s
+      comment = add_commentary ? commentaries[comment_idx].to_s.strip : ''
+      comment_idx += 1 if add_commentary
+
+      candidate = build_bluesky_article_post(emoji, post, url, comment, add_commentary)
+      result << candidate if graphemes(candidate) <= BLUESKY_CHAR_LIMIT
+    end
+
+    log_info("Bluesky: #{result.size} článků publikováno, #{articles.size - result.size} přeskočeno (>300 grafémů)")
+    result
+  end
+
+  def build_bluesky_article_post(emoji, post, url, comment, add_commentary)
+    url_graphemes = graphemes(url) + 2  # +2 za "🔗 "
+
+    if add_commentary && !comment.empty?
+      # Hrubot: krátký titulek + komentář + URL
+      commentary_part = "💬 \"#{comment}\""
+      overhead = graphemes("#{emoji} \n\n#{commentary_part}\n\n🔗 ") + url_graphemes
+      title_budget = BLUESKY_CHAR_LIMIT - overhead
+      title = grapheme_truncate(extract_title(post[:text], 200), title_budget)
+      "#{emoji} #{title}\n\n#{commentary_part}\n\n🔗 #{url}"
+    else
+      # Zpravobot / Slunkobot: excerpt + URL
+      overhead = graphemes("#{emoji} \n\n🔗 ") + url_graphemes
+      excerpt_budget = BLUESKY_CHAR_LIMIT - overhead
+      excerpt = post[:excerpt].to_s.strip
+      excerpt = extract_title(post[:text], 200) if excerpt.empty?
+      excerpt = grapheme_truncate(excerpt, excerpt_budget)
+      "#{emoji} #{excerpt}\n\n🔗 #{url}"
+    end
+  end
+
+  def graphemes(str)
+    str.to_s.scan(/\X/).length
+  end
+
+  def grapheme_truncate(str, max)
+    chars = str.to_s.scan(/\X/)
+    return str if chars.length <= max
+
+    truncated = chars.first([max - 1, 0].max).join
+    truncated.sub(/\s+\S+$/, '').rstrip + '…'
   end
 
   # Mastodon počítá URL jako url_counted_length znaků bez ohledu na skutečnou délku
