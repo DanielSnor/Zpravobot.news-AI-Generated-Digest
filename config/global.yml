@@ -13,7 +13,7 @@ mastodon:
 
 # Bluesky (AT Protocol)
 bluesky:
-  enabled: false                # Zapnout publikování na Bluesky (true/false)
+  enabled: true                 # Zapnout publikování na Bluesky (true/false)
   char_limit: 300               # Max grafémů na jeden post
   articles_per_thread: 9        # Počet článkových postů (celkem = 1 summary + N článků)
   identifier: zpravobot.bsky.social
