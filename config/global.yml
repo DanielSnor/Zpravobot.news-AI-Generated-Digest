@@ -16,7 +16,7 @@ bluesky:
   enabled: true                 # Zapnout publikování na Bluesky (true/false)
   char_limit: 300               # Max grafémů na jeden post
   articles_per_thread: 9        # Počet článkových postů (celkem = 1 summary + N článků)
-  identifier: zpravobot.bsky.social
+  identifier: zpravobot.news
   app_password_env: BLUESKY_APP_PASSWORD_ZPRAVOBOT
   pds_url: https://bsky.social
 
